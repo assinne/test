@@ -1,5 +1,10 @@
 import React from 'react';
-import {Editor, EditorState, RichUtils, convertFromHTML, ContentState} from 'draft-js';
+import {Editor, EditorState, RichUtils, convertFromHTML} from 'draft-js';
+
+import {stateFromHTML} from 'draft-js-import-html';
+import {stateToHTML} from 'draft-js-export-html';
+
+import htmlToDraft from 'html-to-draftjs';
 
 const textfield = () =>{
     return <input type="text"/>;
@@ -8,13 +13,59 @@ const textfield = () =>{
 class RichTextEditor extends React.Component {
     constructor(props) {
         super(props);
-        console.log(props.inputText);
-        this.inputText = props.inputText;
 
-        this.state = {editorState: EditorState.createEmpty()};
-        this.onChange = (editorState) => this.setState({editorState});
+        const blocksFromHTML = convertFromHTML(props.inputText); // Not working ?? Nothing online :(
+        const state = ContentState.createFromBlockArray(
+            blocksFromHTML.contentBlocks,
+            blocksFromHTML.entityMap
+        );
+        this.state = {
+            editorState: EditorState.createWithContent(state),
+            htmlState: "Empty"
+        };
+
+        //second try
+        // const blocksFromHtml = htmlToDraft(props.inputText);
+        // const { contentBlocks, entityMap } = blocksFromHtml;
+        // const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
+
+        // this.state = {
+        //     editorState: EditorState.createWithContent(stateFromHTML(contentState)),
+        //     htmlState: "Empty"
+        // };
+        
+        // First try
+        // this.state = {
+        //     editorState: EditorState.createWithContent(stateFromHTML(props.inputText)),
+        //     htmlState: "Empty"
+        // };
+        
+        this.onChange = (editorState) => {
+            this.state.htmlState = stateToHTML(editorState.getCurrentContent());
+            return this.setState({editorState})
+        };
         this.handleKeyCommand = this.handleKeyCommand.bind(this);
+        this.firstTime = true;
+        console.log(props.inputText);
     }
+
+    // componentDidMount() {
+    //     const content = this.inputText;
+    //     if (content && this.firstTime) {
+    //         const blocksFromHTML = convertFromHTML(content); // Not working ?? Nothing online :(
+    //         const state = ContentState.createFromBlockArray(
+    //             blocksFromHTML.contentBlocks,
+    //             blocksFromHTML.entityMap
+    //         );
+    //         this.state = {
+    //             editorState: EditorState.createWithContent(state),
+    //             htmlState: "Empty"
+    //         };
+    //         this.firstTime = false;
+    //         this.forceUpdate();
+    //     }
+    // }
+
 
     handleKeyCommand(command, editorState) {
         const newState = RichUtils.handleKeyCommand(editorState, command);
@@ -26,18 +77,7 @@ class RichTextEditor extends React.Component {
     }
 
     render() {
-        const content = this.inputText;
-        if (content) {
-            debugger;
-            const blocksFromHTML = convertFromHTML(content);
-            const state = ContentState.createFromBlockArray(
-                blocksFromHTML.contentBlocks,
-                blocksFromHTML.entityMap
-            );
-            this.state = {
-                editorState: EditorState.createWithContent(state),
-            };
-        }
+       
         return (
             <div className = {`rich-text`}>
                 <Editor
@@ -45,6 +85,7 @@ class RichTextEditor extends React.Component {
                     handleKeyCommand={this.handleKeyCommand}
                     onChange={this.onChange}
                 />
+                <input type="hidden" className="draftHTML" value={this.state.htmlState}></input>
             </div>
         );
     }

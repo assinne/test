@@ -20,7 +20,15 @@ export default class App extends Component {
     }
 
     handleClick() {
-        console.log("I am clicked");
+        const savedValue = document.querySelector(".draftHTML").value;
+        console.log(savedValue);
+        const newElement = document.createElement("div");
+
+        newElement.setAttribute("class", "title");
+        newElement.innerHTML = savedValue;
+        //newElement.getElementsByClassName("title").style.marginTop = "1";
+        const current = document.querySelector(".title");
+        current.parentNode.replaceChild(newElement, current);
     }
 
     render() {
