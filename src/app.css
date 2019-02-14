@@ -9,6 +9,13 @@ body {
 .header {
     text-align: center;
 }
+.intructions {
+    text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 40%;
+}
 
 .exampleText {
     display: block;

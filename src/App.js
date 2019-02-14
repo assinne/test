@@ -37,7 +37,7 @@ export default class App extends Component {
             <div>
                 {username ? <h1 className="header">{`Hello ${username}`}</h1> : <h1 className="header">Loading.. please wait!</h1>}
                 <br/>
-                {title ? <RichText inputText={title}/>: <div className=".header">Please wait</div>}<Button updateText={this.handleClick}/>
+                <p className="intructions">(Use ctrl+b or ctrl+u)</p>{title ? <RichText inputText={title}/>: <div className=".header">Please wait</div>}<Button updateText={this.handleClick}/>
                 <br/>
                 <ExampleText/>
             </div>

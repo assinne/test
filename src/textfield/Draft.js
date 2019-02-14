@@ -1,20 +1,13 @@
 import React from 'react';
-import {Editor, EditorState, RichUtils, convertFromHTML} from 'draft-js';
+import {Editor, EditorState, RichUtils, convertFromHTML,ContentState} from 'draft-js';
 
-import {stateFromHTML} from 'draft-js-import-html';
 import {stateToHTML} from 'draft-js-export-html';
-
-import htmlToDraft from 'html-to-draftjs';
-
-const textfield = () =>{
-    return <input type="text"/>;
-}; 
 
 class RichTextEditor extends React.Component {
     constructor(props) {
         super(props);
 
-        const blocksFromHTML = convertFromHTML(props.inputText); // Not working ?? Nothing online :(
+        const blocksFromHTML = convertFromHTML(props.inputText.outerHTML); 
         const state = ContentState.createFromBlockArray(
             blocksFromHTML.contentBlocks,
             blocksFromHTML.entityMap
@@ -23,22 +16,6 @@ class RichTextEditor extends React.Component {
             editorState: EditorState.createWithContent(state),
             htmlState: "Empty"
         };
-
-        //second try
-        // const blocksFromHtml = htmlToDraft(props.inputText);
-        // const { contentBlocks, entityMap } = blocksFromHtml;
-        // const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
-
-        // this.state = {
-        //     editorState: EditorState.createWithContent(stateFromHTML(contentState)),
-        //     htmlState: "Empty"
-        // };
-        
-        // First try
-        // this.state = {
-        //     editorState: EditorState.createWithContent(stateFromHTML(props.inputText)),
-        //     htmlState: "Empty"
-        // };
         
         this.onChange = (editorState) => {
             this.state.htmlState = stateToHTML(editorState.getCurrentContent());
@@ -48,24 +25,6 @@ class RichTextEditor extends React.Component {
         this.firstTime = true;
         console.log(props.inputText);
     }
-
-    // componentDidMount() {
-    //     const content = this.inputText;
-    //     if (content && this.firstTime) {
-    //         const blocksFromHTML = convertFromHTML(content); // Not working ?? Nothing online :(
-    //         const state = ContentState.createFromBlockArray(
-    //             blocksFromHTML.contentBlocks,
-    //             blocksFromHTML.entityMap
-    //         );
-    //         this.state = {
-    //             editorState: EditorState.createWithContent(state),
-    //             htmlState: "Empty"
-    //         };
-    //         this.firstTime = false;
-    //         this.forceUpdate();
-    //     }
-    // }
-
 
     handleKeyCommand(command, editorState) {
         const newState = RichUtils.handleKeyCommand(editorState, command);
